@@ -15,6 +15,7 @@ import { StringOrNumberOrList } from 'victory-core';
 import { RefreshControl } from 'react-native';
 import Toast from '@components/toast';
 import Header from '@components/header';
+import List from './list';
 
 const Index = () => {
   const navigation = useNavigation();
@@ -87,105 +88,102 @@ const Index = () => {
   }
 
 
-  const getHours = (id: string, name: string) => {
-    const start = moment('08:00', 'HH:mm');
-    const lunchStart = moment('12:00', 'HH:mm');
-    const lunchEnd = moment('14:00', 'HH:mm');
-    const end = moment('18:00', 'HH:mm');
+  const getHours = (id: string) => {
+    let start = moment('08:00', 'HH:mm');
+    let lunchStart = moment('12:00', 'HH:mm');
+    let lunchEnd = moment('14:00', 'HH:mm');
+    let end = moment('18:00', 'HH:mm');
 
     const service = services.find((item) => item.id === id);
 
-    const filteredScheduleProfessional = schedule.filter((schedule) => schedule.day === selectedDate.format('DD/MM/YYYY') && schedule.professional_id === selectedProfessional )
+    const filteredScheduleByProfessional = schedule.filter((schedule) => schedule.day === selectedDate.format('DD/MM/YYYY') && schedule.professional_id === selectedProfessional )
     
-    const hours = [];
+    const unavailableHours: any[] = [];
+    const availableHours: any[] = [];
 
-    let scheduledCount = -1;
+    const INTERVAL = 10;
     let workDuration = 0;
   
     while (start.isBefore(lunchStart)) {
       const hour = start.format('HH:mm');
 
-      if (scheduledCount > 0) {
-        hours.push({ hour, isAvailable: false })
-        scheduledCount--;
-      } else {
-        const isAvailable = !filteredScheduleProfessional.find((schedule) => {
-          if (schedule.professional_id === selectedProfessional && schedule.hour === hour) {
-            workDuration = schedule.services?.duration;
-            return true
-          }
-        });
-
-        if (!isAvailable) {
-          scheduledCount = workDuration / 10;
-
-          hours.push({ hour,  isAvailable: false })
-          scheduledCount--;
-        } else {
-          hours.push({ hour, isAvailable });
+      const isAvailable = !filteredScheduleByProfessional.find((schedule) => {
+        if (schedule.hour === hour) {
+          workDuration = schedule.services?.duration;
+          return true
         }
+      });
+
+      if (!isAvailable) {
+          unavailableHours.push({ hour, duration: workDuration})
+          start.add(workDuration, 'minutes');
+        } else {
+          availableHours.push(hour);
+          start.add(INTERVAL, 'minutes')
+        }
+    }
+
+    // while (lunchEnd.isBefore(end)) {
+    //   const hour = lunchEnd.format('HH:mm');
+    //   const isAvailable = !filteredScheduleByProfessional.find((schedule) => schedule.professional_id === selectedProfessional && schedule.hour === hour);
+    //   hours.push({ hour, isAvailable });
+    //   lunchEnd.add(10, 'minutes');
+    // }
+
+
+    const newHours = [];
+    let aux = 0;
+
+    start = moment('08:00', 'HH:mm');
+    lunchStart = moment('12:00', 'HH:mm');
+    lunchEnd = moment('14:00', 'HH:mm');
+    end = moment('18:00', 'HH:mm');
+
+    while(start.isBefore(lunchStart)) {
+      const hour = start.format('HH:mm');
+      const nextScheduleHour = moment(start, 'HH:mm').add(INTERVAL, 'minutes')
+
+      unavailableHours.forEach(el => {
+        const currentTime = moment(el.hour, 'HH:mm')
+        const serviceTime = service?.duration > el.duration ? service?.duration : el.duration
+
+        const nextScheduleWorking = moment(hour, 'HH:mm').add(
+          el.duration,
+          'minutes'
+        );
+
+        const minutesToAdd = currentTime.subtract(start.minutes(), 'minutes').minutes();
+
+        if (currentTime.isBetween(start, nextScheduleWorking)) {
+          newHours.push({ hour, isAvailable: true });
+          start.add(minutesToAdd + serviceTime, 'minutes');
+          aux = 1;
+        }
+        else if(currentTime.isBetween(start, nextScheduleHour)) {
+          newHours.push({ hour, isAvailable: true})
+          start.add(serviceTime + minutesToAdd, 'minutes');
+          aux = 1;
+        }
+      });
+
+      if (aux === 0) {
+        newHours.push({ hour, isAvailable: true})
+        start.add(INTERVAL, 'minutes');
+      } else {
+        aux = 0;
       }
 
-      start.add(10, 'minutes');
+
+      let finalHours: any[] = [];
+
+      newHours.forEach(hour => {
+        if (availableHours.includes(hour.hour)) {
+          finalHours.push(hour);
+        }
+      })
+
+      setHours(finalHours)
     }
-
-    // while (start.isBefore(lunchStart)) {
-    //   const hour = start.format('HH:mm');
-    //   const isAvailable = !filteredScheduleProfessional.find((schedule) => schedule.professional_id === selectedProfessional && schedule.hour === hour);
-
-    //   hours.push({ hour, isAvailable });
-    //   start.add(10, 'minutes');
-    // }
-
-
-
-    while (lunchEnd.isBefore(end)) {
-      const hour = lunchEnd.format('HH:mm');
-      const isAvailable = !filteredScheduleProfessional.find((schedule) => schedule.professional_id === selectedProfessional && schedule.hour === hour);
-      hours.push({ hour, isAvailable });
-      lunchEnd.add(10, 'minutes');
-    }
-
-    // console.log(JSON.stringify(hours, null, 2))
-
-
-    setHours(hours);
-
-    let myHours = hours;
-    // const gapTime = availableServices[name]
-
-    const availableHours = hours.filter(hour => hour.isAvailable);
-    // const newHours = schedule.map(schedule =>)
-
-    // setHours(availableHours);
-
-    // console.log('name', name)
-    // console.log('available', )
-
-    // if (service) {
-    //   for (let i = 0; i < schedule.length; i++) {
-    //     const scheduleMoment = moment(schedule[i].hour, 'HH:mm');
-    //     const serviceMoment = moment(schedule[i].hour, 'HH:mm').add(service.duration, 'minutes');
-    //     const serviceBefore = moment(schedule[i].hour, 'HH:mm').subtract(service.duration, 'minutes');
-        
-    //     console.log(serviceBefore.toLocaleString())
-    //     console.log(scheduleMoment.toLocaleString())
-    //     console.log(serviceMoment.toLocaleString())
-  
-    //     const filteredHours = hours.filter((hour) => {
-    //       const hourMoment = moment(hour.hour, 'HH:mm');
-
-    //       console.log('currentHour', hourMoment.toLocaleString())
-    //       console.log('comp', hourMoment.isBetween(scheduleMoment, serviceMoment))
-    //       return !(hourMoment.isBetween(scheduleMoment, serviceMoment) || hourMoment.isBetween(serviceBefore, scheduleMoment));
-    //     });
-  
-    //   myHours = filteredHours;
-    //   // console.log(filteredHours);
-  
-    //   setHours(myHours);
-    //   }
-    // }
 
   }
 
@@ -219,14 +217,14 @@ const Index = () => {
     }
   };
 
-  const handleSelectService = (id: string, name: string) => {
+  const handleSelectService = (id: string) => {
     if (selectedService === id) {
       getSchedules();
       setSelectedService(null);
       setHours([]);
     } else {
       setSelectedService(id);
-      getHours(id, name);
+      getHours(id);
     }
   };
 
@@ -263,6 +261,15 @@ const Index = () => {
           }
         />
 
+        {/* <List
+          data={professionals}
+          title="Selecionar profissional"
+          keyExtractor={(item: any) => item.id}
+          isActive={(item: any) => item.id === selectedProfessional}
+          onPress={(item: any) => handleSelectProfessional(item.id)}
+          name={(item: any) => item.name}
+        /> */}
+
         {professionals.length > 0 && (
           <>
             <Text h3 bold mt={5} px={5} mb={2}>Selecionar profissional</Text>
@@ -295,7 +302,7 @@ const Index = () => {
               contentContainerStyle={{ paddingHorizontal: 20 }}
               ItemSeparatorComponent={() => <Box w={2} />}
               renderItem={({ item }) => (
-                <Pressable px={3} py={2} rounded="10px" bg={selectedService === item.id ? colors.primary : colors.secondary} onPress={() => handleSelectService(item.id, item.name)}>
+                <Pressable px={3} py={2} rounded="10px" bg={selectedService === item.id ? colors.primary : colors.secondary} onPress={() => handleSelectService(item.id)}>
                   <Text semibold color={selectedService === item.id ? colors.white : colors.grey400}>{item.name}</Text>
                 </Pressable>
               )}
