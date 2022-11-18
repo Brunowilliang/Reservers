@@ -35,11 +35,6 @@ const Index = () => {
   const [services, setServices] = useState<Services[]>([]);
   const [selectedService, setSelectedService] = useState(null as any);
 
-  const availableServices: any = {
-    'Cabelo': 30,
-    'Barba': 10
-  }
-
   const getSchedules = async () => {
     const { data, error } = await supabase
     .from<Schedules>('schedules')
@@ -101,6 +96,7 @@ const Index = () => {
     const unavailableHours: any[] = [];
     const availableHours: any[] = [];
 
+    // const INTERVAL = service?.duration;
     const INTERVAL = 10;
     let workDuration = 0;
   
@@ -129,6 +125,16 @@ const Index = () => {
     //   hours.push({ hour, isAvailable });
     //   lunchEnd.add(10, 'minutes');
     // }
+
+
+    // ex: cabelo 30 minutos
+    // 08:00 - 08:10 - 08:20 - 08:30 - (09:00) - 09:30
+
+    // ex: barba 20 minutos
+    // 08:00 - 08:10 - 08:20 - 08:30 - 08-40 - (09:00 - cabelo) - 09:30
+
+    // ex: cabelo e barba 60 minutos
+    // 08:00 - 08:10 - 08:20 - 08:30 - 08-00 - (09:00 - cabelo e barba) - 10:00 - 10:10 - 10:20 - 10:30 - 10:40
 
 
     const newHours = [];
@@ -173,7 +179,6 @@ const Index = () => {
         aux = 0;
       }
 
-
       let finalHours: any[] = [];
 
       newHours.forEach(hour => {
@@ -182,7 +187,10 @@ const Index = () => {
         }
       })
 
+      console.log(unavailableHours)
+
       setHours(finalHours)
+
     }
 
   }

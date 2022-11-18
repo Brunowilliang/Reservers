@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MyFinance",
-    "slug": "MyFinance",
+    "name": "Reserves",
+    "slug": "reserves",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
@@ -10,7 +10,19 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#171719"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#171719"
+      },
+      "package": "com.reservers",
+      "versionCode": 1
+    },
+    "ios": {
+      "bundleIdentifier": "com.reservers",
+      "buildNumber": "1.0.0"
     }
   }
 }
