@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, FlatList, ScrollView, Spacer } from 'native-base';
+import { Box, FlatList, ScrollView } from 'native-base';
 import { colors } from '@styles/theme';
-import HeaderModal from '@components/headerModal';
 import 'moment/locale/pt-br';
 import moment from 'moment';
 import Calendar from '@components/calendarSplit';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '@services/supabase';
-import { Profiles, Professionals, Services, Schedules, HoursAvailable } from '@services/types';
+import { Professionals, Services, Schedules, HoursAvailable } from '@services/types';
 import Button from '@components/button';
 import Pressable from '@components/pressable';
 import Text from '@components/text';
-import { StringOrNumberOrList } from 'victory-core';
 import { RefreshControl } from 'react-native';
 import Toast from '@components/toast';
 import Header from '@components/header';
-import List from './list';
 
 const Index = () => {
   const navigation = useNavigation();
@@ -37,7 +34,7 @@ const Index = () => {
 
   const getSchedules = async () => {
     const { data, error } = await supabase
-    .from<Schedules>('schedules')
+    .from('schedules')
     .select(`*, profiles:profile_id(*), professionals:professional_id(*), services:service_id(*), users:user_id(*)`)
     error && console.log(error)
     data && (setSchedule(data as any));
@@ -49,21 +46,21 @@ const Index = () => {
     .select('*')
     .eq('profile_id', item.id)
     error && console.log(error)
-    data && setProfessionals(data)
+    data && setProfessionals(data as any);
   }
 
   const getServices = async (id: string) => {
     const { data, error } = await supabase
-    .from<Services>('services')
+    .from('services')
     .select('*')
     .eq('professional_id', id)
     error && console.log(error)
-    data && setServices(data)
+    data && setServices(data as any);
   }
 
   const registerScheduling = async () => {
     const { data, error } = await supabase
-    .from<Schedules>('schedules')
+    .from('schedules')
     .insert({
       day: selectedDate.format('DD/MM/YYYY'),
       hour: selectedHour,

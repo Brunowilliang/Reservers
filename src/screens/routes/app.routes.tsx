@@ -53,8 +53,8 @@ function HomeTabs() {
 export function AppRoutes(){
   return ( 
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="login" getComponent={() => require("@screens/login").default} /> */}
-      {/* <Stack.Screen name="register" getComponent={() => require("@screens/register").default} /> */}
+      <Stack.Screen name="login" getComponent={() => require("@screens/login").default} />
+      <Stack.Screen name="register" getComponent={() => require("@screens/register").default} />
       <Stack.Screen name="home" component={HomeTabs} />
       <Stack.Screen name="newSchedule" getComponent={() => require("@screens/newSchedule").default} />
       <Stack.Screen name="scheduleCompleted" getComponent={() => require("@screens/scheduleCompleted").default} />

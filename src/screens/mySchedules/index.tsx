@@ -21,7 +21,7 @@ const Index = () => {
 
   const getSchedules = async () => {
     const { data, error } = await supabase
-    .from<Schedules>('schedules')
+    .from('schedules')
     .select(`*, profiles:profile_id(*), professionals:professional_id(*), services:service_id(*), users:user_id(*)`)
     error && console.log(error)
     data && (setData(data as any));

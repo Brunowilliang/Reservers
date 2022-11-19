@@ -6,7 +6,7 @@ import { Box, HStack, IPressableProps, VStack } from 'native-base';
 import { TrendUp, TrendDown, CaretRight } from 'phosphor-react-native';
 import moment from 'moment';
 import { maskBRL } from '@components/input';
-import { Profiles, Schedules } from '@src/services/types';
+import { Profiles, Schedules } from '@services/types';
 import { MotiView } from 'moti';
 import { Easing } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
@@ -19,7 +19,7 @@ type Props = IPressableProps & {
   colorBadge?: string;
 }
 
-const StatusPulse = ({ colorBadge }) => {
+const StatusPulse = ({ colorBadge }: any) => {
   return (
     <Box alignItems="center" justifyContent="center">
       {[...Array(3).keys()].map((index) => {

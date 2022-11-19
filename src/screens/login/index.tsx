@@ -16,12 +16,12 @@ const index = () => {
   const [ senha, setSenha ] = useState('');
 
   async function handleLogin(){
-    const { user, error } = await supabase.auth.signIn({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password: senha,
     })
-    user && (
-      Toast({ titulo: 'Login realizado com sucesso', descricao: `Bem vindo ${user?.user_metadata?.nome}`, type: 'success' }),
+    data && (
+      Toast({ titulo: 'Login realizado com sucesso', descricao: 'Bem vindo', type: 'success' }),
       navigation.navigate('search')
     )
     error && (
@@ -31,7 +31,9 @@ const index = () => {
   }
 
   async function handleForgotPassword(){
-    const { data, error } = await supabase.auth.api.resetPasswordForEmail(email)
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, { 
+      redirectTo: 'https://brunowillian.com/reset-password',
+    })
     data && (
       Toast({ titulo: 'E-mail enviado com sucesso', descricao: 'Por favor, verifique sua caixa de entrada.', type: 'success' })
     )

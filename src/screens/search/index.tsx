@@ -4,8 +4,7 @@ import { colors } from '@styles/theme';
 import Header from '@components/header';
 import Input from '@components/input';
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from '../../services/supabase';
-import { Profiles } from '@services/types';
+import { supabase } from '@services/supabase';
 import Toast from '@components/toast';
 import ScrollingList from '@components/scrollingList';
 import ListProfiles from './listProfiles';
@@ -19,7 +18,7 @@ const Index = () => {
   const getProfiles = async () => {
     setLoading(true);
     const { data, error } = await supabase
-    .from<Profiles>('profiles').select(`*`)
+    .from('profiles').select(`*`)
     setLoading(false);
     data && (setData(data as any));
     error && Toast({ titulo: 'Erro', descricao: 'Não foi possível encontrar as empresas', type: 'danger' })
@@ -39,7 +38,7 @@ const Index = () => {
 
         <ScrollingList
           data={data}
-          keyExtractor={(item: Profiles) => item.id}
+          keyExtractor={(item: any) => item.id}
           refreshing={false}
           onRefresh={getProfiles}
           emptyText="Nenhuma empresa encontrada"

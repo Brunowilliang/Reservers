@@ -6,7 +6,7 @@ import { Box, HStack, IPressableProps, VStack } from 'native-base';
 import { TrendUp, TrendDown, CaretRight } from 'phosphor-react-native';
 import moment from 'moment';
 import { maskBRL } from '@components/input';
-import { Profiles } from '@src/services/types';
+import { Profiles } from '@services/types';
 
 type Props = IPressableProps & {
   onPress: () => void;
