@@ -16,10 +16,12 @@ module.exports = function(api) {
             '@styles': './src/styles',
             '@assets': './src/assets',
             '@hooks': './src/hooks',
-            '@services': './src/services'
+            '@services': './src/services',
+            '@lib': './src/lib',
+            '@utils': './src/utils',
           }
         },
       ],
     ],
   };
-};
+}; 

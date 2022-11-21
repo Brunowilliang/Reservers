@@ -1,6 +1,10 @@
 import 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 import { Montserrat_400Regular, Montserrat_500Medium, Montserrat_600SemiBold, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
 import * as SplashScreen from 'expo-splash-screen';
@@ -21,6 +25,7 @@ import FlashMessage from 'react-native-flash-message';
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
