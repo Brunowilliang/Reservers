@@ -29,9 +29,9 @@ const Index = () => {
 
 
   const [{ data: schedule, loading: scheduleLoading, error: scheduleError }, scheduleRefetch ] = useAxios<Schedules>({
-    url: '/schedules/records?expand=service',
+    url: `/schedules/records?filter=day='${selectedDate.format('DD/MM/YYYY')}'&&expand=service`,
     method: 'GET',
-  })
+  });
   if (scheduleError) Toast({ titulo: 'Ops!', descricao: 'Nenhum agendamento encontrado', type: 'warning' });
 
 
@@ -111,10 +111,10 @@ const Index = () => {
 
 
   //   // ex: cabelo 30 minutos
-  //   // 08:00 - 08:10 - 08:20 - 08:30 - (09:00) - 09:30
+  //   // 08:00 - 08:30 - (09:00 - cabelo) - 09:30 - 10:00
 
   //   // ex: barba 20 minutos
-  //   // 08:00 - 08:10 - 08:20 - 08:30 - 08-40 - (09:00 - cabelo) - 09:30
+  //   // 08:00 - 08:20 - 08:40 - (09:00 - cabelo) - 09:30 - 09:50
 
   //   // ex: cabelo e barba 60 minutos
   //   // 08:00 - 08:10 - 08:20 - 08:30 - 08-00 - (09:00 - cabelo e barba) - 10:00 - 10:10 - 10:20 - 10:30 - 10:40
@@ -220,7 +220,7 @@ const Index = () => {
 
   useEffect(() => {
     console.log(JSON.stringify(schedule, null, 2))
-  }, [ ]);
+  }, [schedule]);
 
 
 
