@@ -8,39 +8,41 @@ import Button from '@components/button'
 
 import { supabase } from '@services/supabase';
 import Toast from '@components/toast';
+import { api } from '@services/pocketbase';
 
 
 const index = () => {
   const navigation = useNavigation();
 
 
-  const [ nome, setNome ] = useState('');
+  const [ name, setName ] = useState('');
   const [ email, setEmail ] = useState('');
-  const [ senha, setSenha ] = useState('');
-  const [ celular, setCelular ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const [ username, setUsername ] = useState('');
+  const [ phone, setPhone ] = useState('');
   const [ cpf, setCpf ] = useState('');
   const [ cnpj, setCpnj ] = useState('');
 
   
   async function handleRegister(){
-    const { user, error } = await supabase.auth.signUp(
-      { email, password: senha },
-      { data: {
-          nome,
-          celular,
-          cpf,
-          cnpj,
-        },
-      },
-    )
-    user && (
-      navigation.navigate('login'),
-      Toast({ titulo: 'Cadastro realizado com sucesso', type: 'success' })
-    )
-    error && (
-      console.log(error),
-      Toast({ titulo: 'Erro ao fazer o cadastro', type: 'danger' })
-    )
+    await api.collection('users').create({
+      name,
+      email,
+      password,
+      username,
+      "passwordConfirm": password,
+      "emailVisibility": true,
+      phone,
+      cpf,
+      cnpj,
+      'provider': false,
+    }).then((response) => {
+      Toast({ titulo: 'Cadastro realizado com sucesso', descricao: 'Faça o login para continuar', type: 'success' }),
+      navigation.navigate('login');
+    }).catch((error) => {
+      console.log(error);
+      Toast({titulo: 'Erro ao fazer o cadastro',descricao: 'Por favor, verifique seu e-mail e password.', type: 'danger'})
+    })
   }
 
   const voltar = () => {
@@ -50,10 +52,10 @@ const index = () => {
   return (
     <Center flex={1} px="20px" bg={colors.background}>
       <VStack space="10px" w="100%" mt="30px">
-        <Input label='Nome completo' onChangeText={setNome} />
+        <Input label='Nome completo' onChangeText={setName} />
         <Input label='E-mail' onChangeText={setEmail} />
-        <Input password label='Senha' onChangeText={setSenha} />
-        <Input label='Celular' onChangeText={setCelular} />
+        <Input password label='password' onChangeText={setPassword} />
+        <Input label='Celular' onChangeText={setPhone} />
         <Input label='CPF' onChangeText={setCpf} />
         <Input label='CNPJ' onChangeText={setCpnj} />
       </VStack>

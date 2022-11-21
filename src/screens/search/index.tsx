@@ -1,49 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { Box } from 'native-base';
+import React, {  } from 'react';
+import { Box, FlatList } from 'native-base';
 import { colors } from '@styles/theme';
 import Header from '@components/header';
 import Input from '@components/input';
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from '@services/supabase';
 import Toast from '@components/toast';
-import ScrollingList from '@components/scrollingList';
 import ListProfiles from './listProfiles';
+import { RefreshControl } from 'react-native';
+import Text from '@components/text';
+import { useAxios } from '@services/axios';
 
 const Index = () => { 
   const navigation = useNavigation();
 
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [{ data: users, loading, error }, refetch ] = useAxios({
+    url: '/users/records', method: 'GET',
+  })
+  if (error) Toast({ titulo: 'Ops!', descricao: 'Nenhuma empresa encontrada', type: 'warning' });
 
-  const getProfiles = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-    .from('profiles').select(`*`)
-    setLoading(false);
-    data && (setData(data as any));
-    error && Toast({ titulo: 'Erro', descricao: 'Não foi possível encontrar as empresas', type: 'danger' })
-  }
-
-  useEffect(() => {
-    getProfiles();
-    console.log(data)
-  }, []);
-
-  
   return (
     <>
       <Header px={5} pb={1} title='Bem vindo,' subtitle='Bruno Garcia' />
       <Box px="20px" flex={1} bg={colors.background}>
       <Input mt={5} mb={5} label='Nome' />
 
-        <ScrollingList
-          data={data}
+        <FlatList
+          data={users?.items}
           keyExtractor={(item: any) => item.id}
-          refreshing={false}
-          onRefresh={getProfiles}
-          emptyText="Nenhuma empresa encontrada"
-          separator={3}
-          loading={loading}
+          ItemSeparatorComponent={() => <Box h={3} />}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              tintColor={colors.white}
+              refreshing={loading}
+              onRefresh={refetch}
+            />
+          }
+          ListEmptyComponent={
+              <Text h5 textAlign="center" pt={5} semibold color={colors.grey600}>{
+                loading ? 'Carregando...' : 'Nenhum resultado encontrado'
+              }</Text>
+          }
           renderItem={({ item }: any) => (
             <ListProfiles
               item={item}
@@ -51,6 +48,7 @@ const Index = () => {
             />
           )}
         />
+
       </Box>
     </>
   )

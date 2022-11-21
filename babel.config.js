@@ -17,10 +17,11 @@ module.exports = function(api) {
             '@assets': './src/assets',
             '@hooks': './src/hooks',
             '@services': './src/services',
-            '@lib': './src/lib'
+            '@lib': './src/lib',
+            '@utils': './src/utils',
           }
         },
       ],
     ],
   };
-};
+}; 

@@ -6,6 +6,7 @@ import Input from '@components/input'
 import Button from '@components/button'
 import { supabase } from '@services/supabase';
 import Toast from '@components/toast';
+import { api } from '@services/pocketbase'
 // import Logo from '@assets/logo.svg'
 
 
@@ -13,53 +14,36 @@ const index = () => {
   const navigation = useNavigation();
 
   const [ email, setEmail ] = useState('');
-  const [ senha, setSenha ] = useState('');
+  const [ password, setPassword ] = useState('');
 
   async function handleLogin(){
-    const { data, error } = await supabase.auth.signUp({
+    await api.collection('users').authWithPassword(
       email,
-      password: senha,
+      password
+    ).then((response) => {
+      Toast({ titulo: 'Login realizado com sucesso', descricao: 'Bem vindo ao Pocketbase', type: 'success' }),
+      navigation.navigate('home');
+    }).catch((error) => {
+      console.log(error);
+      Toast({titulo: 'Erro ao fazer o login',descricao: 'Por favor, verifique seu e-mail e password.', type: 'danger'})
     })
-    data && (
-      Toast({ titulo: 'Login realizado com sucesso', descricao: 'Bem vindo', type: 'success' }),
-      navigation.navigate('search')
-    )
-    error && (
-      console.log(error),
-      Toast({titulo: 'Erro ao fazer o login',descricao: 'Por favor, verifique seu e-mail e senha.',type: 'danger'})
-    )
   }
+
 
   async function handleForgotPassword(){
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, { 
-      redirectTo: 'https://brunowillian.com/reset-password',
+    await api.collection('users').requestPasswordReset(email)
+    .then((response) => {
+      console.log(response);
+      Toast({ titulo: 'Email enviado com sucesso', descricao: 'Verifique sua caixa de entrada', type: 'success' })
+    }).catch((error) => {
+      console.log(error);
+      Toast({titulo: 'Erro ao enviar o email',descricao: 'Por favor, verifique seu e-mail e password.',type: 'danger'})
     })
-    data && (
-      Toast({ titulo: 'E-mail enviado com sucesso', descricao: 'Por favor, verifique sua caixa de entrada.', type: 'success' })
-    )
-    error && (
-      console.log(error),
-      Toast({ titulo: 'Erro ao enviar o e-mail', descricao: 'Por favor, verifique seu e-mail.', type: 'danger' })
-    )
   }
-
 
   const registrar = () => {
     navigation.navigate('register')
   }
-
-  // async function deleteUser(){
-  //   const { data: user, error } = await supabase.auth.api.deleteUser(
-  //     '7229f660-f8ba-45f1-bc6d-cdbf4d216fcb'
-  //   )
-  //   user && (
-  //     Toast({ titulo: 'Usuário deletado com sucesso', type: 'success' })
-  //   )
-  //   error && (
-  //     Toast({ titulo: 'Erro ao deletar o usuário', type: 'danger' })
-  //   )
-  // }
-  
 
 
   return (
@@ -67,12 +51,12 @@ const index = () => {
       {/* <Logo /> */}
       <VStack space="10px" w="100%" mt="30px">
         <Input label='E-mail' onChangeText={setEmail}/>
-        <Input password label='Senha' onChangeText={setSenha} />
+        <Input password label='password' onChangeText={setPassword} />
       </VStack>
       <VStack space="10px" w="100%" mt="30px">
         <Button title='Entrar' onPress={handleLogin} />
         <Button variant='secondary' title='Registrar' onPress={registrar}/>
-        <Button variant='secondary' title='Recuperar senha' onPress={handleForgotPassword}/>
+        <Button variant='secondary' title='Recuperar password' onPress={handleForgotPassword}/>
         {/* <Button variant='secondary' title='DeletarUsuário' onPress={deleteUser}/> */}
       </VStack>
     </Center>
