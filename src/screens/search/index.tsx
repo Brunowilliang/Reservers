@@ -1,4 +1,4 @@
-import React, {  } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, FlatList } from 'native-base';
 import { colors } from '@styles/theme';
 import Header from '@components/header';
@@ -8,24 +8,38 @@ import Toast from '@components/toast';
 import ListProfiles from './listProfiles';
 import { RefreshControl } from 'react-native';
 import Text from '@components/text';
-import { useAxios } from '@services/axios';
+import { Collections, UsersResponse } from '@utils/types';
+import { api } from '@services/pocketbase';
 
 const Index = () => { 
   const navigation = useNavigation();
+  const [profiles, setProfiles] = useState<UsersResponse[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const [{ data: users, loading, error }, refetch ] = useAxios({
-    url: '/users/records', method: 'GET',
-  })
-  if (error) Toast({ titulo: 'Ops!', descricao: 'Nenhuma empresa encontrada', type: 'warning' });
+  const getProfiles = async () => {
+    setLoading(true);
+    await api.collection(Collections.Users).getFullList<UsersResponse>(200)
+    .then((response) => {
+      setProfiles(response);
+    }).catch((error) => {
+      console.log(error);
+      Toast({ titulo: 'Ops!', descricao: 'Nenhuma empresa encontrada.', type: 'warning' });
+    }).finally(() => {
+      setLoading(false);
+    });
+  }
+
+  useEffect(() => {
+    getProfiles();
+  }, []);
 
   return (
     <>
       <Header px={5} pb={1} title='Bem vindo,' subtitle='Bruno Garcia' />
       <Box px="20px" flex={1} bg={colors.background}>
       <Input mt={5} mb={5} label='Nome' />
-
         <FlatList
-          data={users?.items}
+          data={profiles}
           keyExtractor={(item: any) => item.id}
           ItemSeparatorComponent={() => <Box h={3} />}
           showsVerticalScrollIndicator={false}
@@ -33,7 +47,7 @@ const Index = () => {
             <RefreshControl
               tintColor={colors.white}
               refreshing={loading}
-              onRefresh={refetch}
+              onRefresh={getProfiles}
             />
           }
           ListEmptyComponent={

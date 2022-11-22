@@ -4,6 +4,7 @@ export declare global {
       login: undefined;
       register: undefined;
       home: undefined;
+      profile: undefined;
       search: undefined;
       newSchedule: item | undefined;
       mySchedules: undefined;

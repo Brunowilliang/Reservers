@@ -2,7 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AnimatedTabBarNavigator } from 'react-native-animated-nav-tab-bar'
 import { colors, fonts } from '@styles/theme';
-import { ListChecks, ChartPieSlice, MagnifyingGlass, Calendar } from 'phosphor-react-native';
+import { ListChecks, ChartPieSlice, MagnifyingGlass, Calendar, User } from 'phosphor-react-native';
 
 const Tabs = AnimatedTabBarNavigator() as any;
 const Stack = createStackNavigator() as any;
@@ -41,8 +41,15 @@ function HomeTabs() {
         
         <Tabs.Screen name="mySchedules" getComponent={() => require("@screens/mySchedules").default}
           options={{
-            tabBarLabel: "Meus Agendamentos",
+            tabBarLabel: "Meus Agend.",
             tabBarIcon: ({ color }: any) => ( <Calendar size={25} weight="bold" color={color} /> ),
+          }}
+        />
+
+        <Tabs.Screen name="profile" getComponent={() => require("@screens/profile").default}
+          options={{
+            tabBarLabel: "Perfil",
+            tabBarIcon: ({ color }: any) => ( <User size={25} weight="bold" color={color} /> ),
           }}
         />
 

@@ -1,31 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { Box, FlatList, SectionList } from 'native-base';
+import { Box, FlatList } from 'native-base';
 import { colors } from '@styles/theme';
 import Header from '@components/header';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Text from '@components/text';
-import { supabase } from '@services/supabase';
 import Toast from '@components/toast';
 import ListSchedules from './listSchedules';
 import moment from 'moment';
 import { RefreshControl } from 'react-native';
-import { useAxios } from '@services/axios';
-import { User, Schedules } from '@utils/types';
+import { Collections, SchedulesResponse, SchedulesRecord, UsersResponse, ProfessionalsResponse, ServicesResponse } from '@utils/types';
+import { api } from '@services/pocketbase';
+
 
 const Index = () => { 
   const navigation = useNavigation();
 
-  const [{ data, loading, error }, Refetch ] = useAxios<Schedules>({
-    url: `schedules/records?expand=provider,user,professional,service`,
-    method: 'GET',
-  })
-  if (error) {
-    Toast({ titulo: 'Ops!', descricao: 'Nenhum agendamento encontrado', type: 'warning' });
-    console.log(error);
+  const [schedules, setSchedules] = useState<SchedulesResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const getSchedule = async () => {
+    setLoading(true);
+    await api.collection(Collections.Schedules).getFullList<SchedulesResponse>(200, {
+      expand: 'provider,user,professional,service',
+      sort: '-created',
+    }).then((response) => {
+      setSchedules(response);
+    }).catch((error) => {
+      console.log(error);
+      Toast({ titulo: 'Ops!', descricao: 'Nenhum agendamento encontrado', type: 'warning' });
+    }).finally(() => {
+      setLoading(false);
+    });
   }
-  if (data) console.log(
-    JSON.stringify(data, null, 1)
-  );
+
+  useEffect(() => {
+    getSchedule();
+  }, []);
+  
 
   
   return (
@@ -33,21 +45,22 @@ const Index = () => {
       <Header title='Bem vindo,' subtitle='Bruno Garcia' px={5} pb={2} />
       <Box px={5} flex={1} bg={colors.background}>
         <FlatList
-          data={data?.items}
+          data={schedules as SchedulesResponse[]}
+          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               tintColor={colors.white}
-              refreshing={false}
-              onRefresh={() => Refetch()}
+              refreshing={loading}
+              onRefresh={getSchedule}
             />
           }
           ListEmptyComponent={
-            <Text h5 mt={5} bold color={colors.grey400}>{loading ? 'Carregando...' : 'Nenhum agendamento encontrado'}</Text>
+            <Text h5 mt={5} textAlign="center" bold color={colors.grey400}>{loading ? 'Carregando...' : 'Nenhum agendamento encontrado'}</Text>
           }
           renderItem={({ item }) => (
             <ListSchedules
-            disabled={ item?.day >= moment().format('DD/MM/YYYY') ? false : true }
-            status={ item?.day >= moment().format('DD/MM/YYYY') ? 'Agendado' : 'Inativo' } mb={3} item={item} onPress={ () => {} } />
+              disabled={ item?.day as any >= moment().format('DD/MM/YYYY') ? false : true }
+              status={ item?.day as any >= moment().format('DD/MM/YYYY') ? 'Agendado' : 'Inativo' } mb={3} item={item} onPress={ () => {} } />
           )}
         />
 

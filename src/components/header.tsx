@@ -12,7 +12,7 @@ type Props = IBoxProps & {
   sair?: boolean;
   title?: string;
   subtitle?: string;
-  right?: React.ReactNode;
+  right?: any;
 }
 
 

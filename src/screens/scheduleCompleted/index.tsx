@@ -1,15 +1,10 @@
-import React, { useRef } from 'react';
-import { Box, FlatList, ScrollView } from 'native-base';
+import React from 'react';
+import { Box } from 'native-base';
 import { colors } from '@styles/theme';
-import HeaderModal from '@components/headerModal';
 import 'moment/locale/pt-br';
-import Calendar from '@components/calendarSplit';
 import Button from '@components/button';
-import Pressable from '@components/pressable';
 import Text from '@components/text';
 import LottieView from 'lottie-react-native';
-import { RefreshControl } from 'react-native';
-import AnimatedLottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const Index = () => {

@@ -21,6 +21,7 @@ import { NativeBaseTheme } from '@styles/nativeBaseTheme';
 import { Routes } from '@screens/routes';
 import { View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
+import { AuthProvider } from '@hooks/useAuth';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -61,11 +62,13 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <FlashMessage position="top" />
-      <NativeBaseProvider theme={NativeBaseTheme}>
-        <StatusBar style="light" animated />
-        <Routes />
-      </NativeBaseProvider> 
+       <AuthProvider>
+          <FlashMessage position="top" />
+          <NativeBaseProvider theme={NativeBaseTheme}>
+            <StatusBar style="light" animated />
+            <Routes />
+          </NativeBaseProvider> 
+       </AuthProvider>
     </View>
   );
 }

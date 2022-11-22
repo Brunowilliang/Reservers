@@ -1,3 +1,3 @@
 import PocketBase from 'pocketbase';
 
-export const api = new PocketBase('https://reservers.pockethost.io');
+export const api = new PocketBase('https://reserves.fly.dev');

@@ -19,6 +19,7 @@ type Props = ITextProps & {
   helpText?: string;
   textRight?: string;
   iconRight?: string;
+  invisible?: boolean;
   iconLeft?: string;
   iconRightOnPress?: () => void;
   iconLeftOnPress?: () => void;
@@ -80,6 +81,7 @@ const Input = (p: Props) => {
         mb={p.errorMessage ? 5 : 0 || p.helpText ? 5 : 0}
         space={3}
         rounded="14px"
+        display={p.invisible ? 'none' : 'flex'}
         borderWidth={1}
         borderColor={p.errorMessage ? colors.attention : colors.secondary}
         pointerEvents={p.select ? 'none' : 'auto'}

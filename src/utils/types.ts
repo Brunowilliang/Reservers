@@ -1,162 +1,78 @@
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  emailVisibility: boolean;
-  password: string;
-  passwordConfirm: string;
-  name: string;
-  phone: string;
-  city: string;
-  cpf: string;
-  cnpj: string;
-  provider: boolean;
-  company_name: string;
+/**
+* This file was @generated using pocketbase-typegen
+*/
+
+export enum Collections {
+	Professionals = "professionals",
+	Schedules = "schedules",
+	Services = "services",
+	Users = "users",
 }
 
-export type Schedules = {
-  page: number
-  perPage: number
-  totalItems: number
-  totalPages: number
-  items: Array<{
-    collectionId: string
-    collectionName: string
-    created: string
-    day: string
-    expand: {
-      professional: {
-        collectionId: string
-        collectionName: string
-        company: string
-        created: string
-        id: string
-        name: string
-        updated: string
-      }
-      provider: {
-        avatar: string
-        city: string
-        cnpj: string
-        collectionId: string
-        collectionName: string
-        company_name: string
-        cpf: string
-        created: string
-        email: string
-        emailVisibility: boolean
-        id: string
-        name: string
-        phone: string
-        provider: boolean
-        updated: string
-        username: string
-        verified: boolean
-      }
-      service: {
-        collectionId: string
-        collectionName: string
-        created: string
-        duration: string
-        id: string
-        name: string
-        price: string
-        professional: Array<string>
-        updated: string
-      }
-      user: {
-        avatar: string
-        city: string
-        cnpj: string
-        collectionId: string
-        collectionName: string
-        company_name: string
-        cpf: string
-        created: string
-        email: string
-        emailVisibility: boolean
-        id: string
-        name: string
-        phone: string
-        provider: boolean
-        updated: string
-        username: string
-        verified: boolean
-      }
-    }
-    hour: string
-    id: string
-    professional: string
-    provider: string
-    service: string
-    updated: string
-    user: string
-  }>
+// Alias types for improved usability
+export type IsoDateString = string
+export type RecordIdString = string
+
+// System fields
+export type BaseSystemFields = {
+	id: RecordIdString
+	created: IsoDateString
+	updated: IsoDateString
+	collectionId: string
+	collectionName: Collections
+	expand?: { [key: string]: any }
 }
 
+export type AuthSystemFields = {
+	email: string
+	emailVisibility: boolean
+	username: string
+	verified: boolean
+} & BaseSystemFields
 
-export type Professionals = {
-  page: number
-  perPage: number
-  totalItems: number
-  totalPages: number
-  items: Array<{
-    collectionId: string
-    collectionName: string
-    company: string
-    created: string
-    expand: {
-      company: {
-        avatar: string
-        city: string
-        cnpj: string
-        collectionId: string
-        collectionName: string
-        company_name: string
-        cpf: string
-        created: string
-        email: string
-        emailVisibility: boolean
-        id: string
-        name: string
-        phone: string
-        provider: boolean
-        updated: string
-        username: string
-        verified: boolean
-      }
-    }
-    id: string
-    name: string
-    updated: string
-  }>
+// Record types for each collection
+
+export type ProfessionalsRecord = {
+	name?: string
+	company?: RecordIdString
 }
 
-export type Services = {
-  page: number
-  perPage: number
-  totalItems: number
-  totalPages: number
-  items: Array<{
-    collectionId: string
-    collectionName: string
-    created: string
-    duration: string
-    expand: {
-      professional: Array<{
-        collectionId: string
-        collectionName: string
-        company: string
-        created: string
-        id: string
-        name: string
-        updated: string
-      }>
-    }
-    id: string
-    name: string
-    price: string
-    professional: Array<string>
-    updated: string
-  }>
+export type SchedulesRecord = {
+	provider?: RecordIdString
+	user?: RecordIdString
+	professional?: RecordIdString
+	service?: RecordIdString
+	day?: string
+	hour?: string
+}
+
+export type ServicesRecord = {
+	name?: string
+	price?: string
+	duration?: string
+	professional?: RecordIdString
+}
+
+export type UsersRecord = {
+	company_name?: string
+	name?: string
+	avatar?: string
+	phone?: string
+	cpf?: string
+	cnpj?: string
+	provider?: boolean
+	city?: string
+}
+
+// Response types include system fields and match responses from the PocketBase API
+export type ProfessionalsResponse = ProfessionalsRecord & BaseSystemFields
+export type SchedulesResponse = SchedulesRecord & BaseSystemFields
+export type ServicesResponse = ServicesRecord & BaseSystemFields
+export type UsersResponse = UsersRecord & AuthSystemFields
+
+export type CollectionRecords = {
+	professionals: ProfessionalsRecord
+	schedules: SchedulesRecord
+	services: ServicesRecord
+	users: UsersRecord
 }

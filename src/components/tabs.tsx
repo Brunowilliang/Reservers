@@ -4,7 +4,7 @@ import { colors } from '@styles/theme';
 
 type Props = {
   options: Array<{ label: string, value: string }>;
-  onPress: (value: string) => void;
+  onPress: (value: string | number) => void;
   initial: number;
   bg?: string;
 }
@@ -19,7 +19,7 @@ const Tabs = (p: Props) => {
       selectedTextContainerStyle={{ height: 60 }}
       bold
       backgroundColor={colors.secondary}
-      buttonColor={p.bg || colors.success}
+      buttonColor={p.bg || colors.primary}
       borderColor={colors.secondary}
       borderWidth={0}
       height={60}

@@ -2,16 +2,14 @@ import React from 'react';
 import Text from '@components/text';
 import Pressable from '@components/pressable';
 import { colors } from '@styles/theme';
-import { Box, HStack, IPressableProps, VStack } from 'native-base';
-import { TrendUp, TrendDown, CaretRight } from 'phosphor-react-native';
-import moment from 'moment';
-import { maskBRL } from '@components/input';
-import { User } from '@utils/types';
+import { HStack, IPressableProps, VStack } from 'native-base';
+import { CaretRight } from 'phosphor-react-native';
+import { UsersRecord } from '@utils/types';
 
 type Props = IPressableProps & {
   onPress: () => void;
   disabled?: boolean;
-  item: User
+  item: UsersRecord;
   variant?: 'primary' | 'secondary';
 }
 

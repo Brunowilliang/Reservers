@@ -10,14 +10,13 @@ import Pressable from '@components/pressable';
 import Text from '@components/text';
 import Toast from '@components/toast';
 import Header from '@components/header';
-import { useAxios } from '@services/axios';
-import { User, Schedules, Services, Professionals } from '@utils/types';
+import { Collections, SchedulesResponse, UsersResponse, ProfessionalsResponse, ServicesResponse } from '@utils/types';
 import { api } from '@services/pocketbase';
 
 const Index = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { item } = route.params as { item: User };
+  const { item } = route.params as { item: UsersResponse };
 
   const [selectedDate, setSelectedDate] = useState(moment());
 
@@ -27,27 +26,50 @@ const Index = () => {
   const [selectedProfessional, setSelectedProfessional] = useState(null as any);
   const [selectedService, setSelectedService] = useState(null as any);
 
+  const [schedules, setSchedules] = useState<SchedulesResponse[]>([]);
+  const [professionals, setProfessionals] = useState<ProfessionalsResponse[]>([]);
+  const [services, setServices] = useState<ServicesResponse[]>([]);
 
-  const [{ data: schedule, loading: scheduleLoading, error: scheduleError }, scheduleRefetch ] = useAxios<Schedules>({
-    url: `/schedules/records?filter=day='${selectedDate.format('DD/MM/YYYY')}'&&expand=service`,
-    method: 'GET',
-  });
-  if (scheduleError) Toast({ titulo: 'Ops!', descricao: 'Nenhum agendamento encontrado', type: 'warning' });
+  const getSchedule = async () => {
+    await api.collection(Collections.Schedules).getFullList<SchedulesResponse>(200, {
+      expand: 'service',
+      filter: `day = "${selectedDate.format('DD/MM/YYYY')}"`,
+      sort: '-created',
+    }).then((response) => {
+      setSchedules(response);
+    }).catch((error) => {
+      console.log(error);
+      Toast({ titulo: 'Ops!', descricao: 'Nenhum agendamento encontrado', type: 'warning' });
+    });
+  }
 
+  const getProfessional = async () => {
+    await api.collection(Collections.Professionals).getFullList<ProfessionalsResponse>(200, {
+      expand: 'company',
+      filter: `company = "${item.id}"`,
+      sort: '-created',
+    }).then((response) => {
+      console.log(JSON.stringify(response, null, 2));
+      setProfessionals(response);
+    }).catch((error) => {
+      console.log(error);
+      Toast({ titulo: 'Ops!', descricao: 'Nenhum profissional encontrado', type: 'warning' });
+    });
+  }
 
-  const [{ data: professionals, loading: professionalsLoading, error: professionalsError }, professionalsRefetch ] = useAxios<Professionals>({
-    url: `/professionals/records/?expand=company&&filter=company='${item.id}'`,
-    method: 'GET',
-  })
-  if (professionalsError) Toast({ titulo: 'Ops!', descricao: 'Nenhum profissional encontrado', type: 'warning' });
-
-
-  const [{ data: services, loading: servicesLoading, error: servicesError }, servicesRefetch ] = useAxios<Services>({
-    url: `/services/records/?filter=professional.company.id='${item.id}'&&expand=professional.company`,
-    method: 'GET',
-  })
-  if (servicesError) Toast({ titulo: 'Ops!', descricao: 'Nenhum serviço encontrado', type: 'warning' });
-
+  const getServices = async () => {
+    await api.collection(Collections.Services).getFullList<ServicesResponse>(200, {
+      expand: 'professional.company',
+      filter: `professional.company.id = "${item.id}"`,
+      sort: '-created',
+    }).then((response) => {
+      console.log(JSON.stringify(response, null, 2));
+      setServices(response);
+    }).catch((error) => {
+      console.log(error);
+      Toast({ titulo: 'Ops!', descricao: 'Nenhum serviço encontrado', type: 'warning' });
+    });
+  }
 
   const createSchedule = async () => {
     await api.collection('schedules').create({
@@ -64,6 +86,13 @@ const Index = () => {
       console.log(error);
     });
   }
+
+
+  useEffect(() => {
+    getSchedule();
+    getProfessional();
+    getServices();
+  }, [selectedDate]);
 
 
   // const getHours = (id: string) => {
@@ -218,9 +247,9 @@ const Index = () => {
   }
 
 
-  useEffect(() => {
-    console.log(JSON.stringify(schedule, null, 2))
-  }, [schedule]);
+  // useEffect(() => {
+  //   console.log(JSON.stringify(schedule, null, 2))
+  // }, [schedule]);
 
 
 
@@ -236,7 +265,7 @@ const Index = () => {
         />
 
         <FlatList
-          data={professionals?.items}
+          data={professionals}
           horizontal
           display={selectedDate ? 'flex' : 'none'}
           showsHorizontalScrollIndicator={false}
@@ -253,7 +282,7 @@ const Index = () => {
         />
 
         <FlatList
-          data={services?.items}
+          data={services}
           display={selectedProfessional ? 'flex' : 'none'}
           horizontal
           showsHorizontalScrollIndicator={false}
