@@ -29,22 +29,14 @@ const index = () => {
     })
   }
 
+const [username, setUsername] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [cnpj, setCnpj] = useState("");
+const [companyName, setCompanyName] = useState("");
+const [companyPhone, setCompanyPhone] = useState("");
+const [companyAddress, setCompanyAddress] = useState("");
 
-  const [user, setUser] = useState({
-    username: "",
-    email: "",
-    emailVisibility: true,
-    password: "",
-    passwordConfirm: "",
-    company_name: "",
-    name: "",
-    phone: "",
-    cpf: "",
-    cnpj: "",
-    // provider: true,
-    city: ""
-  })
-  
   async function handleRegister(){
     await api.collection('users').create({
       username: user.username || "",

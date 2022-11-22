@@ -3,9 +3,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AnimatedTabBarNavigator } from 'react-native-animated-nav-tab-bar'
 import { colors, fonts } from '@styles/theme';
 import { ListChecks, ChartPieSlice, MagnifyingGlass, Calendar, User } from 'phosphor-react-native';
+import { useAuth } from '@hooks/useAuth';
 
 const Tabs = AnimatedTabBarNavigator() as any;
-const Stack = createStackNavigator() as any;
+const { Navigator, Group, Screen } = createStackNavigator();
+
 
 const tabAppearance: any = {
   horizontalPadding: 20,
@@ -52,20 +54,19 @@ function HomeTabs() {
             tabBarIcon: ({ color }: any) => ( <User size={25} weight="bold" color={color} /> ),
           }}
         />
-
       </Tabs.Navigator>
   )
 }
 
 export function AppRoutes(){
+  const { user } = useAuth();
   return ( 
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="login" getComponent={() => require("@screens/login").default} /> */}
-      {/* <Stack.Screen name="register" getComponent={() => require("@screens/register").default} /> */}
-      <Stack.Screen name="home" component={HomeTabs} />
-      <Stack.Screen name="newSchedule" getComponent={() => require("@screens/newSchedule").default} />
-      <Stack.Screen name="scheduleCompleted" getComponent={() => require("@screens/scheduleCompleted").default} />
-    </Stack.Navigator>
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="homeTabs" component={HomeTabs} />
+      <Screen name="home" component={HomeTabs} />
+      <Screen name="newSchedule" getComponent={() => require("@screens/newSchedule").default} />
+      <Screen name="scheduleCompleted" getComponent={() => require("@screens/scheduleCompleted").default} />
+    </Navigator>
   );
 }
 
