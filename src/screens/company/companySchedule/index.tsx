@@ -14,7 +14,7 @@ import moment from 'moment';
 
 const Index = () => { 
   const navigation = useNavigation();
-  const { user } = useAuth();
+  const { company } = useAuth();
 
   const [schedules, setSchedules] = useState<SchedulesResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ const Index = () => {
     setLoading(true);
     await api.collection(Collections.Schedules).getFullList<SchedulesResponse>(200, {
       expand: 'company,user,professional,service',
-      filter: `company = "${user?.expand?.company?.id}"`,
+      filter: `company = "${company?.id}"`,
       sort: '-created',
     }).then((response) => {
       setSchedules(response);
@@ -43,7 +43,7 @@ const Index = () => {
 
   return (
     <>
-      <Header px={5} pb={1} title='Bem vindo,' subtitle={user?.expand?.company?.name} />
+      <Header px={5} pb={1} title='Bem vindo,' subtitle={company?.name} />
       <Box px="20px" flex={1} bg={colors.background}>
         <Text h3 mt={5} mb={5} bold color={colors.grey400}>Agenda do dia</Text>
         <FlatList

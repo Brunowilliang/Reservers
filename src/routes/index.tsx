@@ -8,11 +8,11 @@ import { AuthRoutes } from './auth.routes';
 import { useAuth } from '@hooks/useAuth';
 
 export function Routes () {
-  const { user } = useAuth();
+  const { user, company } = useAuth();
 
   return (
     <NavigationContainer>
-      {!user ? <AuthRoutes /> : user.company ? <CompanyRoutes /> : <UserRoutes />}
+      {!user && !company ? <AuthRoutes /> : user ? <UserRoutes /> : <CompanyRoutes />}
     </NavigationContainer>
   );
 }

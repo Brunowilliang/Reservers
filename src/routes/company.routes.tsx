@@ -61,6 +61,7 @@ export function CompanyRoutes(){
       <Screen name="userProfile" getComponent={() => require("@screens/user/userProfile").default } />
       <Screen name="companySettingsHours" getComponent={() => require("@screens/company/companySettingsHours").default } />
       <Screen name="companyProfessionals" getComponent={() => require("@screens/company/companyProfessionals").default } />
+      <Screen name="companyProfessionalsServices" getComponent={() => require("@screens/company/companyProfessionalsServices").default } />
     </Navigator>
   );
 }

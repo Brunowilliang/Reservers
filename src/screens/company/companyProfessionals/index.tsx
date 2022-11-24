@@ -13,14 +13,14 @@ import Card from './card';
 
 const Index = () => { 
   const navigation = useNavigation();
-  const { user } = useAuth();
+  const { company } = useAuth();
 
   const [professionals, setProfessionals] = useState<ProfessionalsResponse[]>([]);
 
 
   const getProfessionals = async () => {
     await api.collection(Collections.Professionals).getFullList<ProfessionalsResponse>(200, {
-      filter: `company = "${user?.expand?.company?.id}"`,
+      filter: `company = "${company?.id}"`,
       sort: '-created',
     }).then((response) => {
       setProfessionals(response);
@@ -36,12 +36,14 @@ const Index = () => {
 
   return (
     <>
-      <Header back title='Selecione o' subtitle='profissional' px={5} pb={2} />
+      <Header back title='Selecione o' subtitle='profissional' px={5} />
       <Box flex={1} bg={colors.background} px={5}>
         <FlatList
           data={professionals as ProfessionalsResponse[]}
           renderItem={({ item }) => (
-            <Card item={item} onPress={() => {}} />
+            <Card item={item} onPress={
+              () => navigation.navigate('companyProfessionalsServices', {item} as any)
+            } />
           )}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

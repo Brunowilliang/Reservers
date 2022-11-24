@@ -20,6 +20,7 @@ export declare global {
       companyProfile: undefined;
       companySettingsHours: undefined;
       companyProfessionals: undefined;
+      companyProfessionalsServices: undefined;
     }
   }
 }
