@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import { api } from '@services/pocketbase';
-import { Collections, UsersResponse } from '@utils/types';
+import { Collections, CompanyResponse, UsersResponse } from '@utils/types';
 import Toast from '@components/toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -22,24 +22,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await api.collection(Collections.Users).authWithPassword(
       email, password,
       ).then((response) => {
-      setUser(response.record as any);
-      AsyncStorage.setItem('@Reservers:user', JSON.stringify(response.record));
+      api.collection(Collections.Users).getOne(response.record.id, {
+        expand: 'company',
+      }).then((response) => {
+        setUser(response as any);
+        AsyncStorage.setItem('@PocketBase:user', JSON.stringify(response));
+      }).catch((error) => {
+        console.log(error);
+        Toast({ titulo: 'Ops!', descricao: 'Nenhum usuário encontrado.', type: 'warning' }); 
+      });
     }).catch((error) => {
       console.log(error);
-      Toast({titulo: 'Erro ao fazer o login',descricao: 'Por favor, verifique seu e-mail e password.', type: 'danger'})
-    })
+      Toast({ titulo: 'Ops!', descricao: 'Nenhum usuário encontrado.', type: 'warning' });
+    });
   }
 
   async function handleLogout(){
-    AsyncStorage.removeItem('@Reservers:user');
+    AsyncStorage.removeItem('@PocketBase:user');
     setUser(null as any);
     api.authStore.clear();
   }
 
+
   
   useEffect(() => {
     async function loadUser(){
-      const user = await AsyncStorage.getItem('@Reservers:user');
+      const user = await AsyncStorage.getItem('@PocketBase:user');
       if(user){
         setUser(JSON.parse(user));
       }
@@ -48,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadUser();
   }, [])
 
-  const value = { handleLogin, handleLogout, user, setUser };
+  const value = { user, setUser, handleLogin, handleLogout };
 
   return (
     <AuthContext.Provider value={value as any}>

@@ -27,7 +27,7 @@ const Index = () => {
       </Box>
       <Box flex={1} w="100%">
         <Text h1 bold color={colors.grey400} textAlign="center" mb={5}>{`Agendamento\nrealizado`}</Text>
-        <Button title="Ir para meus agendamentos" onPress={() => navigation.navigate('mySchedules')}/>
+        <Button title="Ir para meus agendamentos" onPress={() => navigation.navigate('userSchedules')}/>
       </Box>
     </Box>
   )

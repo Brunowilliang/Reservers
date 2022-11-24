@@ -10,13 +10,15 @@ import Pressable from '@components/pressable';
 import Text from '@components/text';
 import Toast from '@components/toast';
 import Header from '@components/header';
-import { Collections, SchedulesResponse, UsersResponse, ProfessionalsResponse, ServicesResponse } from '@utils/types';
+import { Collections, SchedulesResponse, UsersResponse, ProfessionalsResponse, ServicesResponse, CompanyResponse } from '@utils/types';
 import { api } from '@services/pocketbase';
+import { useAuth } from '@hooks/useAuth';
 
 const Index = () => {
   const navigation = useNavigation();
+  const { user } = useAuth();
   const route = useRoute();
-  const { item } = route.params as { item: UsersResponse };
+  const { item } = route.params as { item: CompanyResponse };
 
   const [selectedDate, setSelectedDate] = useState(moment());
 
@@ -25,6 +27,7 @@ const Index = () => {
   
   const [selectedProfessional, setSelectedProfessional] = useState(null as any);
   const [selectedService, setSelectedService] = useState(null as any);
+  const [serviceDuration, setServiceDuration] = useState(null as any);
 
   const [schedules, setSchedules] = useState<SchedulesResponse[]>([]);
   const [professionals, setProfessionals] = useState<ProfessionalsResponse[]>([]);
@@ -45,7 +48,6 @@ const Index = () => {
 
   const getProfessional = async () => {
     await api.collection(Collections.Professionals).getFullList<ProfessionalsResponse>(200, {
-      expand: 'company',
       filter: `company = "${item.id}"`,
       sort: '-created',
     }).then((response) => {
@@ -72,15 +74,15 @@ const Index = () => {
   }
 
   const createSchedule = async () => {
-    await api.collection('schedules').create({
-      "provider": item.id,
-      "user": item.id,
+    await api.collection(Collections.Schedules).create({
+      "company": item.id,
+      "user": user.id,
       "professional": selectedProfessional,
       "service": selectedService,
       "day": selectedDate.format('DD/MM/YYYY'),
-      "hour": "00:00",
+      "hour": hours,
     }).then((response) => {
-      navigation.navigate('scheduleCompleted');
+      navigation.navigate('userScheduleCompleted');
     }).catch((error) => {
       Toast({ titulo: 'Ops!', descricao: 'Erro ao criar agendamento', type: 'warning' });
       console.log(error);
@@ -95,117 +97,38 @@ const Index = () => {
   }, [selectedDate]);
 
 
-  // const getHours = (id: string) => {
-  //   let start = moment('08:00', 'HH:mm');
-  //   let lunchStart = moment('12:00', 'HH:mm');
-  //   let lunchEnd = moment('14:00', 'HH:mm');
-  //   let end = moment('18:00', 'HH:mm');
+  const INTERVAL = 10;
+  const start = moment("08:00", "HH:mm");
+  const startInicial = start.subtract(INTERVAL, "minutes");
+  const lunchStart = moment("12:00", "HH:mm");
+  const lunchEnd = moment("14:00", "HH:mm");
+  const end = moment("18:00", "HH:mm");
+  const valueHoursInicialLunch = lunchStart.format("HH:mm").split(":");
+  const intHoursInicialLunch = parseInt(valueHoursInicialLunch[0]);
+  const valueHoursEndLunch = lunchEnd.format("HH:mm").split(":");
+  const intHoursEndLunch = parseInt(valueHoursEndLunch[0]);
+  const totalLunch = intHoursEndLunch - intHoursInicialLunch;
+  const valueHoursInicial = start.format("HH:mm").split(":");
+  const intHoursInicial = parseInt(valueHoursInicial[0]);
+  const valueHoursEnd = end.format("HH:mm").split(":");
+  const intHoursEnd = parseInt(valueHoursEnd[0]);
+  const total = intHoursEnd - intHoursInicial - 1;
 
-  //   const service = services?.items.find((service: any) => service.id === id);
+  const AvaliableTimes = Array.from({ length: (total * 60) / INTERVAL }, (v) =>
+    startInicial.add(INTERVAL, "minutes").format("HH:mm")
+  );
 
-  //   const filteredScheduleByProfessional = schedule?.items.filter((schedule: Schedules) => schedule?.items?.day === selectedDate.format('DD/MM/YYYY') && schedule?.items.ex.professional_id === selectedProfessional )
-    
-  //   const unavailableHours: any[] = [];
-  //   const availableHours: any[] = [];
+  AvaliableTimes.splice(
+    AvaliableTimes.indexOf(lunchStart.format("HH:mm")),
+    (totalLunch * 60) / INTERVAL
+  );
 
-  //   // const INTERVAL = service?.duration;
-  //   const INTERVAL = 10;
-  //   let workDuration = 0;
-  
-  //   while (start.isBefore(lunchStart)) {
-  //     const hour = start.format('HH:mm');
-
-  //     const isAvailable = !filteredScheduleByProfessional.find((schedule: Schedules) => {
-  //       if (schedule.hour === hour) {
-  //         workDuration = schedule.services?.duration;
-  //         return true
-  //       }
-  //     });
-
-  //     if (!isAvailable) {
-  //         unavailableHours.push({ hour, duration: workDuration})
-  //         start.add(workDuration, 'minutes');
-  //       } else {
-  //         availableHours.push(hour);
-  //         start.add(INTERVAL, 'minutes')
-  //       }
-  //   }
-
-  //   // while (lunchEnd.isBefore(end)) {
-  //   //   const hour = lunchEnd.format('HH:mm');
-  //   //   const isAvailable = !filteredScheduleByProfessional.find((schedule) => schedule.professional_id === selectedProfessional && schedule.hour === hour);
-  //   //   hours.push({ hour, isAvailable });
-  //   //   lunchEnd.add(10, 'minutes');
-  //   // }
-
-
-  //   // ex: cabelo 30 minutos
-  //   // 08:00 - 08:30 - (09:00 - cabelo) - 09:30 - 10:00
-
-  //   // ex: barba 20 minutos
-  //   // 08:00 - 08:20 - 08:40 - (09:00 - cabelo) - 09:30 - 09:50
-
-  //   // ex: cabelo e barba 60 minutos
-  //   // 08:00 - 08:10 - 08:20 - 08:30 - 08-00 - (09:00 - cabelo e barba) - 10:00 - 10:10 - 10:20 - 10:30 - 10:40
-
-
-  //   const newHours = [];
-  //   let aux = 0;
-
-  //   start = moment('08:00', 'HH:mm');
-  //   lunchStart = moment('12:00', 'HH:mm');
-  //   lunchEnd = moment('14:00', 'HH:mm');
-  //   end = moment('18:00', 'HH:mm');
-
-  //   while(start.isBefore(lunchStart)) {
-  //     const hour = start.format('HH:mm');
-  //     const nextScheduleHour = moment(start, 'HH:mm').add(INTERVAL, 'minutes')
-
-  //     unavailableHours.forEach(el => {
-  //       const currentTime = moment(el.hour, 'HH:mm')
-  //       const serviceTime = service?.duration > el.duration ? service?.duration : el.duration
-
-  //       const nextScheduleWorking = moment(hour, 'HH:mm').add(
-  //         el.duration,
-  //         'minutes'
-  //       );
-
-  //       const minutesToAdd = currentTime.subtract(start.minutes(), 'minutes').minutes();
-
-  //       if (currentTime.isBetween(start, nextScheduleWorking)) {
-  //         newHours.push({ hour, isAvailable: true });
-  //         start.add(minutesToAdd + serviceTime, 'minutes');
-  //         aux = 1;
-  //       }
-  //       else if(currentTime.isBetween(start, nextScheduleHour)) {
-  //         newHours.push({ hour, isAvailable: true})
-  //         start.add(serviceTime + minutesToAdd, 'minutes');
-  //         aux = 1;
-  //       }
-  //     });
-
-  //     if (aux === 0) {
-  //       newHours.push({ hour, isAvailable: true})
-  //       start.add(INTERVAL, 'minutes');
-  //     } else {
-  //       aux = 0;
-  //     }
-
-  //     let finalHours: any[] = [];
-
-  //     newHours.forEach(hour => {
-  //       if (availableHours.includes(hour.hour)) {
-  //         finalHours.push(hour);
-  //       }
-  //     })
-
-  //     console.log(unavailableHours)
-
-  //     setHours(finalHours)
-
-  //   }
-
-  // }
+  schedules.map((x: any) => {
+    AvaliableTimes.splice(
+      AvaliableTimes.indexOf(x.hour),
+      Math.round(x.expand.service.duration / INTERVAL)
+    );
+  });
 
 
   const handleSelectDate = (date: any) => {
@@ -225,12 +148,14 @@ const Index = () => {
     }
   };
 
-  const handleSelectService = (id: string) => {
+
+  const handleSelectService = (id: string, duration: any) => {
     if (selectedService === id) {
       setSelectedService(null);
       setHours([]);
     } else {
       setSelectedService(id);
+      setServiceDuration(duration);
     }
   };
 
@@ -255,7 +180,7 @@ const Index = () => {
 
   return (
     <Box safeAreaBottom pb={5} flex={1} bg={colors.background}>
-      <Header px={5} title='Novo agendamento,' subtitle={item?.company_name} back />
+      <Header px={5} title='Novo agendamento,' subtitle={item?.name} back />
       <VStack space={5}>
         <Calendar
           style={{ height: 130 }}
@@ -290,12 +215,31 @@ const Index = () => {
           ItemSeparatorComponent={() => <Box w={2} />}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <Pressable px={3} py={2} rounded="10px" bg={selectedService === item.id ? colors.primary : colors.secondary} onPress={() => handleSelectService(item.id)}>
+            <Pressable px={3} py={2} rounded="10px" bg={selectedService === item.id ? colors.primary : colors.secondary} onPress={() => handleSelectService(item.id, item.duration)}>
               <Text semibold color={selectedService === item.id ? colors.white : colors.grey400}>
                 {item.name}
               </Text>
             </Pressable>
           )}
+        />
+
+        <FlatList
+          data={AvaliableTimes}
+          display={selectedService ? 'flex' : 'none'}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20 }}
+          ItemSeparatorComponent={() => <Box w={2} />}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => {
+            return (
+                <Pressable px={3}py={2}rounded="10px"bg={hours === item ? colors.primary : colors.secondary} onPress={() => {setHours(item) }}>
+                 <Text semibold color={hours === item ? colors.white : colors.grey400}>
+                  {item}
+                </Text>
+              </Pressable>
+            );
+          }}
         />
         <Box mx={5}>
           <Button title='Realizar agendamento' onPress={createSchedule} bg={colors.primary} />

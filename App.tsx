@@ -18,7 +18,7 @@ import 'moment/locale/pt-br';
 import { NativeBaseProvider,  } from 'native-base'
 import { NativeBaseTheme } from '@styles/nativeBaseTheme';
 
-import { Routes } from '@screens/routes';
+import { Routes } from '@routes/index';
 import { View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { AuthProvider } from '@hooks/useAuth';

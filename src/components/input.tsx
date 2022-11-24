@@ -21,6 +21,7 @@ type Props = ITextProps & {
   iconRight?: string;
   invisible?: boolean;
   iconLeft?: string;
+  width?: string;
   iconRightOnPress?: () => void;
   iconLeftOnPress?: () => void;
   onPress?: () => void;
@@ -72,10 +73,9 @@ const Input = (p: Props) => {
   }
 
   return (
-    <TouchableOpacity onPress={p.onPress} activeOpacity={p.select ? 0.5 : 1}>
       <HStack
         h={p.small ? '46px' : '56px'}
-        w="100%"
+        w={p.width || '100%'}
         bg={colors.secondary}
         px={4}
         mb={p.errorMessage ? 5 : 0 || p.helpText ? 5 : 0}
@@ -139,7 +139,6 @@ const Input = (p: Props) => {
           <CaretDown size={25} weight="bold" color={colors.grey400} />
         )}
       </HStack>
-    </TouchableOpacity>
   );
 }
 

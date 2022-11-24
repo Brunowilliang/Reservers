@@ -6,8 +6,8 @@ const { Navigator, Group, Screen } = createStackNavigator() as any;
 export function AuthRoutes(){
   return (
     <Navigator initialRouteName={"login"} screenOptions={{ headerShown: false }}>
-      <Screen name="login" getComponent={() => require("@screens/login").default} />
-      <Screen name="register" getComponent={() => require("@screens/register").default} />
+      <Screen name="login" getComponent={() => require("@screens/auth/login").default} />
+      <Screen name="register" getComponent={() => require("@screens/auth/register").default} />
     </Navigator>
   );
 }

@@ -3,6 +3,7 @@
 */
 
 export enum Collections {
+	Company = "company",
 	Professionals = "professionals",
 	Schedules = "schedules",
 	Services = "services",
@@ -32,13 +33,24 @@ export type AuthSystemFields = {
 
 // Record types for each collection
 
+export type CompanyRecord = {
+	name?: string
+	phone?: string
+	road?: string
+	number?: string
+	district?: string
+	zipcode?: string
+	complement?: string
+	city?: string
+	state?: string
+	country?: string
+}
+
 export type ProfessionalsRecord = {
 	name?: string
-	company?: RecordIdString
 }
 
 export type SchedulesRecord = {
-	provider?: RecordIdString
 	user?: RecordIdString
 	professional?: RecordIdString
 	service?: RecordIdString
@@ -54,23 +66,20 @@ export type ServicesRecord = {
 }
 
 export type UsersRecord = {
-	company_name?: string
 	name?: string
 	avatar?: string
-	phone?: string
-	cpf?: string
-	cnpj?: string
-	provider?: boolean
-	city?: string
+	company?: RecordIdString
 }
 
 // Response types include system fields and match responses from the PocketBase API
+export type CompanyResponse = CompanyRecord & BaseSystemFields
 export type ProfessionalsResponse = ProfessionalsRecord & BaseSystemFields
 export type SchedulesResponse = SchedulesRecord & BaseSystemFields
 export type ServicesResponse = ServicesRecord & BaseSystemFields
 export type UsersResponse = UsersRecord & AuthSystemFields
 
 export type CollectionRecords = {
+	company: CompanyRecord
 	professionals: ProfessionalsRecord
 	schedules: SchedulesRecord
 	services: ServicesRecord

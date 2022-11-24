@@ -20,10 +20,8 @@ const listProfiles = ( p: Props ) => {
     <Pressable bg={colors.secondary} disabled={p.disabled} rounded={"14px"} alignItems="flex-start" py={3} px={5} {...p}>
       <HStack space={4} alignItems="center">
         <VStack flex={1}>
-          <Text h5 numberOfLines={1} bold color={colors.grey400}>{p.item?.expand?.provider.name}</Text>
           <Text h5 numberOfLines={1} bold color={colors.grey400}>{p.item?.expand?.user.name}</Text>
-          <Text h5 numberOfLines={1} bold color={colors.grey400}>{p.item?.expand?.professional.name}</Text>
-          <Text h5 numberOfLines={1} bold color={colors.grey400}>{p.item?.expand?.service.name}</Text>
+          <Text h5 numberOfLines={1} medium color={colors.grey400}>{p.item?.expand?.service.name}</Text>
           <Text h5 numberOfLines={1} medium color={colors.grey400}>
             {moment(p.item.day, 'DD/MM/YYYY').format('DD [de] MMM, YYYY')} às {p.item.hour}
           </Text>

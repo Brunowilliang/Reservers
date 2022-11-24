@@ -6,6 +6,7 @@ import Pressable from './pressable';
 import { CaretLeft } from 'phosphor-react-native';
 import MenuOptions from './menuOptions';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '@hooks/useAuth';
 
 type Props = IBoxProps & {
   back?: boolean;
@@ -18,6 +19,7 @@ type Props = IBoxProps & {
 
 const Header = (p: Props) => {
   const navigation = useNavigation();
+  const { user } = useAuth();
   const voltar = () => navigation.goBack();
 
   return (

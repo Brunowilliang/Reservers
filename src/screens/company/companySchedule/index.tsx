@@ -3,17 +3,18 @@ import { Box, FlatList } from 'native-base';
 import { colors } from '@styles/theme';
 import Header from '@components/header';
 import { useNavigation } from '@react-navigation/native';
-import Text from '@components/text';
 import Toast from '@components/toast';
+import { RefreshControl } from 'react-native';
+import Text from '@components/text';
+import { Collections, SchedulesResponse, UsersResponse } from '@utils/types';
+import { api } from '@services/pocketbase';
+import { useAuth } from '@hooks/useAuth';
 import ListSchedules from './listSchedules';
 import moment from 'moment';
-import { RefreshControl } from 'react-native';
-import { Collections, SchedulesResponse, SchedulesRecord, UsersResponse, ProfessionalsResponse, ServicesResponse } from '@utils/types';
-import { api } from '@services/pocketbase';
-
 
 const Index = () => { 
   const navigation = useNavigation();
+  const { user } = useAuth();
 
   const [schedules, setSchedules] = useState<SchedulesResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,8 @@ const Index = () => {
   const getSchedule = async () => {
     setLoading(true);
     await api.collection(Collections.Schedules).getFullList<SchedulesResponse>(200, {
-      expand: 'provider,user,professional,service',
+      expand: 'company,user,professional,service',
+      filter: `company = "${user?.expand?.company?.id}"`,
       sort: '-created',
     }).then((response) => {
       setSchedules(response);
@@ -37,13 +39,13 @@ const Index = () => {
   useEffect(() => {
     getSchedule();
   }, []);
-  
 
-  
+
   return (
     <>
-      <Header title='Bem vindo,' subtitle='Bruno Garcia' px={5} pb={2} />
-      <Box px={5} flex={1} bg={colors.background}>
+      <Header px={5} pb={1} title='Bem vindo,' subtitle={user?.expand?.company?.name} />
+      <Box px="20px" flex={1} bg={colors.background}>
+        <Text h3 mt={5} mb={5} bold color={colors.grey400}>Agenda do dia</Text>
         <FlatList
           data={schedules as SchedulesResponse[]}
           showsVerticalScrollIndicator={false}
@@ -63,7 +65,6 @@ const Index = () => {
               status={ item?.day as any >= moment().format('DD/MM/YYYY') ? 'Agendado' : 'Inativo' } mb={3} item={item} onPress={ () => {} } />
           )}
         />
-
       </Box>
     </>
   )

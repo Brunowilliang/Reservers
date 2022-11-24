@@ -31,24 +31,25 @@ const tabBarOptions: any = {
 };
 
 function HomeTabs() {
+  const { user } = useAuth();
   return (
     <Tabs.Navigator initialRouteName="search" appearance={tabAppearance} tabBarOptions={tabBarOptions}>
 
-        <Tabs.Screen name="search" getComponent={() => require("@screens/search").default}
+        <Tabs.Screen name="userSearch" getComponent={() => require("@screens/user/userSearch").default}
           options={{
-            tabBarLabel: "Descobrir",
+            tabBarLabel: 'Descobrir',
             tabBarIcon: ({ color }: any) => ( <MagnifyingGlass size={25} weight="bold" color={color} /> ),
           }}
         />
         
-        <Tabs.Screen name="mySchedules" getComponent={() => require("@screens/mySchedules").default}
+        <Tabs.Screen name="userSchedules" getComponent={() => require("@screens/user/userSchedules").default}
           options={{
             tabBarLabel: "Meus Agend.",
             tabBarIcon: ({ color }: any) => ( <Calendar size={25} weight="bold" color={color} /> ),
           }}
         />
 
-        <Tabs.Screen name="profile" getComponent={() => require("@screens/profile").default}
+        <Tabs.Screen name="userProfile" getComponent={() => require("@screens/user/userProfile").default}
           options={{
             tabBarLabel: "Perfil",
             tabBarIcon: ({ color }: any) => ( <User size={25} weight="bold" color={color} /> ),
@@ -58,14 +59,14 @@ function HomeTabs() {
   )
 }
 
-export function AppRoutes(){
+export function UserRoutes(){
   const { user } = useAuth();
   return ( 
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="homeTabs" component={HomeTabs} />
       <Screen name="home" component={HomeTabs} />
-      <Screen name="newSchedule" getComponent={() => require("@screens/newSchedule").default} />
-      <Screen name="scheduleCompleted" getComponent={() => require("@screens/scheduleCompleted").default} />
+      <Screen name="userNewSchedule" getComponent={() => require("@screens/user/userNewSchedule").default} />
+      <Screen name="userScheduleCompleted" getComponent={() => require("@screens/user/userScheduleCompleted").default} />
     </Navigator>
   );
 }

@@ -5,22 +5,24 @@ import Header from '@components/header';
 import Input from '@components/input';
 import { useNavigation } from '@react-navigation/native';
 import Toast from '@components/toast';
-import ListProfiles from './listProfiles';
+import Card from './card';
 import { RefreshControl } from 'react-native';
 import Text from '@components/text';
-import { Collections, UsersResponse } from '@utils/types';
+import { Collections, CompanyRecord } from '@utils/types';
 import { api } from '@services/pocketbase';
+import { useAuth } from '@hooks/useAuth';
 
 const Index = () => { 
   const navigation = useNavigation();
-  const [profiles, setProfiles] = useState<UsersResponse[]>([]);
+  const [company, setCompany] = useState<CompanyRecord[]>([] as CompanyRecord[]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
-  const getProfiles = async () => {
+  const getCompany = async () => {
     setLoading(true);
-    await api.collection(Collections.Users).getFullList<UsersResponse>(200)
+    await api.collection(Collections.Company).getFullList<CompanyRecord>(200)
     .then((response) => {
-      setProfiles(response);
+      setCompany(response);
     }).catch((error) => {
       console.log(error);
       Toast({ titulo: 'Ops!', descricao: 'Nenhuma empresa encontrada.', type: 'warning' });
@@ -30,16 +32,16 @@ const Index = () => {
   }
 
   useEffect(() => {
-    getProfiles();
-  }, []);
+    getCompany();
+  }, [ ]);
 
   return (
     <>
-      <Header px={5} pb={1} title='Bem vindo,' subtitle='Bruno Garcia' />
+      <Header px={5} title='Bem vindo,' subtitle={user?.name} />
       <Box px="20px" flex={1} bg={colors.background}>
-      <Input mt={5} mb={5} label='Nome' />
+      <Input mb={5} label='Nome' />
         <FlatList
-          data={profiles}
+          data={company}
           keyExtractor={(item: any) => item.id}
           ItemSeparatorComponent={() => <Box h={3} />}
           showsVerticalScrollIndicator={false}
@@ -47,7 +49,7 @@ const Index = () => {
             <RefreshControl
               tintColor={colors.white}
               refreshing={loading}
-              onRefresh={getProfiles}
+              onRefresh={getCompany}
             />
           }
           ListEmptyComponent={
@@ -56,10 +58,7 @@ const Index = () => {
               }</Text>
           }
           renderItem={({ item }: any) => (
-            <ListProfiles
-              item={item}
-              onPress={ () => navigation.navigate('newSchedule', { item }) }
-            />
+            <Card item={item} onPress={ () => navigation.navigate('userNewSchedule', { item }) } />
           )}
         />
 

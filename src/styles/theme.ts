@@ -4,12 +4,12 @@ export const colors = {
   primaryOpacity: '#2666DE50',
   secondary: '#23232B',
   
-  border: '#DCE6FF',
   grey700: '#2B2A2E',
   grey600: '#6F6F6F',
   grey400: '#C2C2C2',
   greyMedium: '#C2C2C2',
 
+  border: '#393D45',
   
   background: '#171719',
   
