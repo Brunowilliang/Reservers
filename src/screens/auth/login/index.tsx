@@ -12,20 +12,19 @@ import Logo from '@assets/logo.png';
 
 const index = () => {
   const navigation = useNavigation();
-  const { handleLogin } = useAuth();
+  const { loginUser, loginCompany } = useAuth();
 
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
 
 
-  async function loginUser(){
-    handleLogin('bruno', 'bruno123');
+  async function login(){
+    loginUser('bruno', 'bruno123');
   }
 
-  async function loginCompany(){
-    handleLogin('tiago', 'bruno123');
+  async function company(){
+    loginCompany('tiago', 'bruno123');
   }
-
 
   const registrar = () => {
     navigation.navigate('register')
@@ -42,8 +41,8 @@ const index = () => {
         <Input password label='Senha' onChangeText={(text) => setPassword(text)} />
       </VStack>
       <VStack space="10px" w="100%" mt="30px">
-        <Button title='Entrar como usuário' onPress={loginUser} />
-        <Button title='Entrar como Empresa' onPress={loginCompany} />
+        <Button title='Entrar como usuário' onPress={login} />
+        <Button title='Entrar como Empresa' onPress={company} />
         {/* <Button variant='secondary' title='Registrar' onPress={registrar}/> */}
         {/* <Button variant='secondary' title='Recuperar password' onPress={handleForgotPassword}/> */}
       </VStack>

@@ -23,7 +23,7 @@ const Header = (p: Props) => {
   const voltar = () => navigation.goBack();
 
   return (
-    <Box safeAreaTop bg={colors.background} flexDir="row" justifyContent="space-between" alignItems="center" py={5} {...p}>
+    <Box safeAreaTop bg={colors.background} flexDir="row" justifyContent="space-between" alignItems="center" pt={5} pb={5} {...p}>
       {p.back && (
         <Pressable onPress={voltar} pr={3}>
           <CaretLeft size={25} weight="bold" color={colors.white} />

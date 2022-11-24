@@ -34,13 +34,13 @@ export type AuthSystemFields = {
 // Record types for each collection
 
 export type CompanyRecord = {
+	avatar?: string
 	name?: string
 	phone?: string
-	road?: string
+	adress?: string
 	number?: string
 	district?: string
 	zipcode?: string
-	complement?: string
 	city?: string
 	state?: string
 	country?: string
@@ -48,9 +48,11 @@ export type CompanyRecord = {
 
 export type ProfessionalsRecord = {
 	name?: string
+	company?: RecordIdString
 }
 
 export type SchedulesRecord = {
+	company?: RecordIdString
 	user?: RecordIdString
 	professional?: RecordIdString
 	service?: RecordIdString
@@ -66,13 +68,20 @@ export type ServicesRecord = {
 }
 
 export type UsersRecord = {
-	name?: string
 	avatar?: string
-	company?: RecordIdString
+	name?: string
+	phone?: string
+	adress?: string
+	number?: string
+	district?: string
+	zipcode?: string
+	city?: string
+	state?: string
+	country?: string
 }
 
 // Response types include system fields and match responses from the PocketBase API
-export type CompanyResponse = CompanyRecord & BaseSystemFields
+export type CompanyResponse = CompanyRecord & AuthSystemFields
 export type ProfessionalsResponse = ProfessionalsRecord & BaseSystemFields
 export type SchedulesResponse = SchedulesRecord & BaseSystemFields
 export type ServicesResponse = ServicesRecord & BaseSystemFields

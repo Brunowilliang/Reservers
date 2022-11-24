@@ -11,6 +11,7 @@ import Text from '@components/text';
 import { Collections, CompanyRecord } from '@utils/types';
 import { api } from '@services/pocketbase';
 import { useAuth } from '@hooks/useAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Index = () => { 
   const navigation = useNavigation();
@@ -33,6 +34,7 @@ const Index = () => {
 
   useEffect(() => {
     getCompany();
+    console.log(JSON.stringify(user));
   }, [ ]);
 
   return (
